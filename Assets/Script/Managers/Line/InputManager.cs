@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
@@ -11,9 +12,9 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Pointer.current != null && Pointer.current.press.wasPressedThisFrame)
         {
-            Vector2 mousePos = Input.mousePosition;
+            Vector2 mousePos = Pointer.current.position.ReadValue();
 
             Vector2 worldPos = mainCamera.ScreenToWorldPoint(mousePos);
 

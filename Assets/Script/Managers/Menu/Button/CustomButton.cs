@@ -27,6 +27,9 @@ public class CustomButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     private Image buttonImage;
     public ObjectTransformManager manager;
 
+    // Added state tracker to prevent double-firing
+    private bool isPressed = false;
+
     void Start()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -40,42 +43,56 @@ public class CustomButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     public void OnPointerDown(PointerEventData eventData)
     {
         if (!interactable) return;
-        // Wrap the float in a new Vector3(scale, scale, scale)
+        
+        isPressed = true;
+        
         Animate(restingAnchoredPosition + pressedPositionOffset, new Vector3(pressedScale, pressedScale, pressedScale), pressedColor);
         if (manager != null) manager.OnPressed();
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (!interactable) return;
-        // Use your original Vector3 variable 'restingScale'
+        // Only execute if the button is currently in a pressed state
+        if (!interactable || !isPressed) return;
+        
+        isPressed = false;
+        
         Animate(restingAnchoredPosition, restingScale, originalColor);
         if (manager != null) manager.OnReleased();
         onClick.Invoke();
     }
 
-    // Safety: If the finger slides off the button while pressed, reset state
-    public void OnPointerExit(PointerEventData eventData) => OnPointerUp(eventData);
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        // If the pointer slides off while pressed, cancel the press visually 
+        // but DO NOT invoke the click event.
+        if (!interactable || !isPressed) return;
+        
+        isPressed = false;
+        
+        Animate(restingAnchoredPosition, restingScale, originalColor);
+        if (manager != null) manager.OnReleased();
+    }
 
-    // Update the method signature to accept Vector3 for scale
     private void Animate(Vector2 pos, Vector3 scale, Color color)
     {
         rectTransform.DOKill();
         transform.DOKill();
         
         rectTransform.DOAnchorPos(pos, animationDuration).SetUpdate(true);
-        transform.DOScale(scale, animationDuration).SetUpdate(true); // Now this works with Vector3
+        transform.DOScale(scale, animationDuration).SetUpdate(true);
         if (buttonImage != null) buttonImage.DOColor(color, animationDuration).SetUpdate(true);
     }
 
     private void OnDisable()
     {
-        // Force reset visuals if the object is disabled while clicked
         rectTransform.DOKill();
         transform.DOKill();
         rectTransform.anchoredPosition = restingAnchoredPosition;
         transform.localScale = restingScale;
         if (buttonImage != null) buttonImage.color = originalColor;
+        
+        isPressed = false; // Reset state on disable
     }
 
     public void UpdateVisuals()
