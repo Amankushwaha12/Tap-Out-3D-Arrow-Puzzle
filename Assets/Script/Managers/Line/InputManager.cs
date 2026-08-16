@@ -15,6 +15,7 @@ public class InputManager : MonoBehaviour
         if (Pointer.current != null && Pointer.current.press.wasPressedThisFrame)
         {
             Vector2 mousePos = Pointer.current.position.ReadValue();
+            Debug.Log(mousePos);
 
             Vector2 worldPos = mainCamera.ScreenToWorldPoint(mousePos);
 

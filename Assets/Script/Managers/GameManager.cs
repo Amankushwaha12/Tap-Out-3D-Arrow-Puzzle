@@ -1,41 +1,46 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // For TextMeshPro
+using TMPro; 
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
     [Header("UI References")]
     public TextMeshProUGUI levelText;
-    public GameObject gameOverPanel;
-    public GameObject levelCompletePanel;
+    public SceneTransitionGame sceneTransitionGame;
     
     [Header("System References")]
     public LevelManager levelManager; // Drag your LevelManager component here in the inspector
     public static GameManager Instance;
     public LineManager lineManager;
+    public LivesManager livesManager;
 
-    
+    [Header("Screen Manger")]
+    public bool isCompleted;
+
     [Header("Mobile")]
     public float left;
     public float right, top, bottom;
 
+    
+
+
     void Awake()
     {
         Instance = this;
+        livesManager = GetComponent<LivesManager>();
         Vector3 min = Camera.main.ViewportToWorldPoint(new Vector3(0, 0));
         Vector3 max = Camera.main.ViewportToWorldPoint(new Vector3(1, 1));
 
-        left = min.x;
-        right = max.x;
-        bottom = min.y;
-        top = max.y;
+        // left = min.x;
+        // right = max.x;
+        // bottom = min.y;
+        // top = max.y;
     }
 
     private void Start()
     {
-        // Hide screens on boot
-        gameOverPanel.SetActive(false);
-        levelCompletePanel.SetActive(false);
+        sceneTransitionGame.AtStart();
 
         // Subscribe to Level Manager events
         if (levelManager != null)
@@ -44,6 +49,12 @@ public class GameManager : MonoBehaviour
             levelManager.OnLevelCompleted += ShowLevelCompleteScreen;
             levelManager.OnLevelFailed += ShowGameOverScreen;
         }
+
+        livesManager.GetExtraLives += GetExtrLives;
+    }
+    public void GetExtrLives()
+    {
+        sceneTransitionGame.ShowScreen(sceneTransitionGame.playerPanel);
     }
 
     private void OnDestroy()
@@ -67,10 +78,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdateLevelUI(int currentLevelNumber)
     {
-        // Make sure panels are hidden when a new level starts
-        gameOverPanel.SetActive(false);
-        levelCompletePanel.SetActive(false);
-        
+        // Make sure panels are hidden when a new level starts        
         if (levelText != null)
         {
             levelText.text = "LEVEL " + currentLevelNumber;
@@ -79,12 +87,12 @@ public class GameManager : MonoBehaviour
 
     private void ShowLevelCompleteScreen()
     {
-        levelCompletePanel.SetActive(true);
+        sceneTransitionGame.ShowScreen(sceneTransitionGame.victoryPanel);
     }
 
     private void ShowGameOverScreen()
     {
-        gameOverPanel.SetActive(true);
+        sceneTransitionGame.ShowScreen(sceneTransitionGame.defeatPanel);
     }
 
     // --- BUTTON CLICKS ---
@@ -92,16 +100,17 @@ public class GameManager : MonoBehaviour
 
     public void OnNextLevelButtonClicked()
     {
-        levelCompletePanel.SetActive(false);
+        sceneTransitionGame.ShowScreen(sceneTransitionGame.playerPanel);
     }
 
     public void OnRetryButtonClicked()
     {
-        gameOverPanel.SetActive(false);
+        sceneTransitionGame.ShowScreen(sceneTransitionGame.playerPanel);
         if (levelManager != null)
         {
             levelManager.RetryCurrentLevel();
         }
     }
     
+
 }

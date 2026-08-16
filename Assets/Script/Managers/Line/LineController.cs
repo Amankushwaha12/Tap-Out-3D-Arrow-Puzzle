@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,6 +27,7 @@ public class LineController : MonoBehaviour
 
     private readonly List<Vector3[]> history = new();
     private int rewindIndex;
+    public Action Damage;
 
     private void Awake()
     {
@@ -68,11 +70,13 @@ public class LineController : MonoBehaviour
         movingBackward = true;
 
         rewindIndex = history.Count - 1;
+        Damage();
     }
 
     public void Start()
     {
         GameManager.Instance.lineManager.RegisterLine(this);
+        UpdateHead();
     }
 
     private void Update()

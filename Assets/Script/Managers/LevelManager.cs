@@ -14,6 +14,7 @@ public class LevelManager : MonoBehaviour
 
     [Header("Dependencies")]
     [SerializeField] private LineManager _lineManager;
+    [SerializeField] public LivesManager _liveManager;
 
     [Header("Pacing")]
     [SerializeField] private float _levelTransitionDelay = 1.5f;
@@ -25,6 +26,12 @@ public class LevelManager : MonoBehaviour
     public event Action<int> OnLevelStarted;
     public event Action OnLevelCompleted;
     public event Action OnLevelFailed;
+
+
+    void Awake()
+    {
+        if(_lineManager == null) Debug.LogError("No Level Manager Asigned");
+    }
 
     private void Start()
     {
@@ -59,7 +66,7 @@ public class LevelManager : MonoBehaviour
         if (_currentLevelInstance != null) Destroy(_currentLevelInstance);
 
         // 2. Reset Lives via the Singleton
-        if (LivesManager.Instance != null) LivesManager.Instance.ResetLives();
+        if (_liveManager) _liveManager.ResetLives();
 
         // 3. Spawn new level
         _currentLevelInstance = Instantiate(_levelPrefabs[index], _levelContainer);
@@ -77,18 +84,31 @@ public class LevelManager : MonoBehaviour
         if (_isTransitioning) return;
         _isTransitioning = true;
         OnLevelCompleted?.Invoke();
-        StartCoroutine(TransitionRoutine());
     }
 
     private IEnumerator TransitionRoutine()
     {
         yield return new WaitForSeconds(_levelTransitionDelay);
-        _currentLevelIndex++;
-        if (_currentLevelIndex < _levelPrefabs.Length) LoadLevel(_currentLevelIndex);
+        if (_currentLevelIndex < _levelPrefabs.Length) LoadLevel(++_currentLevelIndex);
+    }
+    public void NextLevel()
+    {
+        LoadLevel(++_currentLevelIndex);
     }
 
     public void RetryCurrentLevel()
     {
         LoadLevel(_currentLevelIndex);
+        GetExtraLives();
+    }
+
+    public void NoLiveRemain()
+    {
+        OnLevelFailed();
+    }
+
+    public void GetExtraLives()
+    {
+        _liveManager.GetExtraLives();
     }
 }

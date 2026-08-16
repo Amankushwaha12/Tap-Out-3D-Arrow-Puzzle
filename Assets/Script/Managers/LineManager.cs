@@ -13,6 +13,8 @@ public class LineManager : MonoBehaviour
     // This event signals to your LevelManager that the level is cleared
     public event Action OnAllLinesRemoved;
 
+    public LivesManager livesManager;
+
     public void InitializeLines(Transform levelRoot)
     {
         _activeLines.Clear();
@@ -29,6 +31,7 @@ public class LineManager : MonoBehaviour
 
     public void RegisterLine(LineController line)
     {
+        line.Damage += livesManager.Damage;
         if (!_activeLines.Contains(line))
         {
             _activeLines.Add(line);
