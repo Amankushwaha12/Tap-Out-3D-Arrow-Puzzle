@@ -94,6 +94,7 @@ public class LevelManager : MonoBehaviour
     public void NextLevel()
     {
         LoadLevel(++_currentLevelIndex);
+        GetExtraLives();
     }
 
     public void RetryCurrentLevel()

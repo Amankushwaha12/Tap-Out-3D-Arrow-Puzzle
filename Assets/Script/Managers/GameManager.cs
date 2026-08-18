@@ -112,5 +112,9 @@ public class GameManager : MonoBehaviour
         }
     }
     
-
+    public void Menu()
+    {
+        if(BootstrapManager.Instance) BootstrapManager.Instance.RequestSceneLoad("Menu");
+        else Debug.LogWarning("Bootstrap Manger Not found.!!!");
+    }
 }
