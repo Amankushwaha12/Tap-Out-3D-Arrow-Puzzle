@@ -20,7 +20,7 @@ public class ShopElementLoader : MonoBehaviour
     public GameObject itemButtonPrefab;
     public Transform gridParent;
     public CanvasGroup gridCanvasGroup;
-    public MenuManager menuManager;
+    public CoinDisplay coinDisplay;
 
     public MeshRenderer domeMeshRenderer;
     public ShopItem currentTheme; 
@@ -36,7 +36,7 @@ public class ShopElementLoader : MonoBehaviour
         // This now handles initialization using the JSON system
         InitializeDefaultShopItems(allShopItems);
         
-        LoadCategory(ShopCategory.Ball);
+        LoadCategory(ShopCategory.Head);
     }
 
     public void LoadCategory(ShopCategory category)
@@ -44,8 +44,8 @@ public class ShopElementLoader : MonoBehaviour
         int index = 0;
         switch (category)
         {
-            case ShopCategory.Ball:  index = 0; break;
-            case ShopCategory.Paint: index = 1; break;
+            case ShopCategory.Head:  index = 0; break;
+            case ShopCategory.Trail: index = 1; break;
             case ShopCategory.Theme: index = 2; break;
         }
 
@@ -122,7 +122,7 @@ public class ShopElementLoader : MonoBehaviour
         {
             if (Wallet.TryPurchase(item.price))
             {
-                menuManager.coinDisplay.CoinTextUpdate();
+                coinDisplay.CoinTextUpdate();
                 ShopData.SetItemState(item, 1);
                 RefreshAllButtons();
             }
@@ -147,8 +147,8 @@ public class ShopElementLoader : MonoBehaviour
         }
     }
 
-    public void BallPanel()  => LoadCategory(ShopCategory.Ball);
-    public void PaintPanel() => LoadCategory(ShopCategory.Paint);
+    public void HeadPanel()  => LoadCategory(ShopCategory.Head);
+    public void TrailPanel() => LoadCategory(ShopCategory.Trail);
     public void ThemePanel() => LoadCategory(ShopCategory.Theme);
 
     public static void InitializeDefaultShopItems(List<ShopItem> allItems)
@@ -184,6 +184,7 @@ public class ShopElementLoader : MonoBehaviour
         Debug.Log("Apply Theme Called.");
         ShopItem[] allItems = Resources.LoadAll<ShopItem>("ShopItem");
         int themeID = ShopData.GetActiveItemID(ShopCategory.Theme);
+        
         currentTheme = System.Array.Find(allItems, i => i.id == themeID && i.category == ShopCategory.Theme);
         Material mat = domeMeshRenderer.material;
 

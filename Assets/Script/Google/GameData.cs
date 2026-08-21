@@ -19,8 +19,8 @@ public class GameData
     [System.NonSerialized] 
     public Dictionary<string, int> activeItems = new Dictionary<string, int>()
     {
-        { "Ball", 0 },  // Default ID
-        { "Paint", 50 }, // Default ID
+        { "Head", 0 },  // Default ID
+        { "Trail", 50 }, // Default ID
         { "Theme", 100 }  // Default ID
     };
 

@@ -1,5 +1,5 @@
 using UnityEngine;
-public enum ShopCategory { Ball, Paint, Theme }
+public enum ShopCategory { Head, Trail, Theme}
 
 [CreateAssetMenu(fileName = "NewShopItem", menuName = "Game/Shop Item")]
 public class ShopItem : ScriptableObject

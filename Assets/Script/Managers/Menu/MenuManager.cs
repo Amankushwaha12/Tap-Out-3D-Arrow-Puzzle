@@ -37,7 +37,8 @@ public class MenuManager : MonoBehaviour
     {
         Application.targetFrameRate = 60;
         coinDisplay.CoinTextUpdate();
-        BootstrapManager.Instance.RegisterUI(sceneTransitionManager.loadingBar, sceneTransitionManager.statusText, sceneTransitionManager.loadingScreen, sceneTransitionManager.currentPanel);
+        if(BootstrapManager.Instance) BootstrapManager.Instance.RegisterUI(sceneTransitionManager.loadingBar, sceneTransitionManager.statusText, sceneTransitionManager.loadingScreen, sceneTransitionManager.currentPanel);
+        else Debug.LogWarning("BootstrapManager is not carrying.");
         // if (AudioManager.Instance != null)
         // {
         //     AudioManager.Instance.musicSource.volume = 1f; // Or fade it in:

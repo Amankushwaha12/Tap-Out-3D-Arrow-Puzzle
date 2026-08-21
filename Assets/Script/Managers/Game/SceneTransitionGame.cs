@@ -69,6 +69,12 @@ public class SceneTransitionGame : MonoBehaviour
         currentPanel = newPanel;
         currentPanel.ShowPanel();
     }
+    
+    public void ShowOverScreen(PanelAnimator newPanel)
+    {
+        currentPanel = newPanel;
+        currentPanel.ShowPanel();
+    }
 
     
     public void SceneChange(string sceneName)
